@@ -1,0 +1,56 @@
+{% extends 'task/base.html' %}
+{% block content %}
+<h2>All Tasks</h2>
+<div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+  <form method="GET" style="display: flex; gap: 8px; align-items: center;">
+      <input type="text" name="query" placeholder="Search tasks..." value="{{ query }}">
+      Created At: <input type="date" name="created_date">
+      Start date: <input type="date" name="start_date">
+      End date: <input type="date" name="end_date">
+      <button type="submit">Search</button>
+  </form>
+</div>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Task ID</th>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Done</th>
+      <th>Created At</th>
+      <th>Start Date</th>
+      <th>End Date</th>
+      <th>Priority</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for task in tasks %}
+      <tr>
+        <td>{{task.id}}</td>
+        <td>{{ task.title }}</td>
+        <td>{{ task.description}}</td>
+        <td>
+          <form method="POST" action="{% url 'task:task_toggle' task.id %}">
+            {% csrf_token %}
+            <input type="checkbox" {% if task.completed %}checked{% endif %} onclick="this.form.submit()">
+          </form>
+        </td>
+        <td>{{task.created_at}}</td>
+        <td>{{task.start_date}}</td>
+        <td>{{task.end_date}}</td>
+        <td>{{task.priority}}</td>
+        <td>
+          <a class="btn btn-sm btn-warning" href="{% url 'task:task_edit' task.id %}">Edit</a>
+          <a class="btn btn-sm btn-danger" href="{% url 'task:task_delete' task.id %}">Delete</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="5">No tasks yet.</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
